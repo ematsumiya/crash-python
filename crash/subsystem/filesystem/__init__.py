@@ -6,7 +6,7 @@ from __future__ import print_function
 from __future__ import division
 
 import gdb
-from crash.util import container_of
+from crash.util import container_of, get_typed_pointer
 from crash.infra import CrashBaseClass, export
 from crash.types.list import list_for_each_entry
 from crash.subsystem.storage import block_device_name
@@ -14,7 +14,9 @@ from crash.subsystem.storage import Storage as block
 
 class FileSystem(CrashBaseClass):
     __types__ = [ 'struct dio *',
-                  'struct buffer_head *' ]
+                  'struct buffer_head *',
+                  'struct super_block' ]
+    __symvals__ = [ 'super_blocks' ]
     __symbol_callbacks__ = [
                     ('dio_bio_end', '_register_dio_bio_end'),
                     ('dio_bio_end_aio', '_register_dio_bio_end'),
@@ -241,5 +243,26 @@ class FileSystem(CrashBaseClass):
             'bh' : bh,
         }
         return chain
+
+    @export
+    @classmethod
+    def for_each_super_block(cls):
+        """
+        Iterate over the list of super blocks and yield each one.
+
+        Args:
+            None
+
+        Yields:
+            gdb.Value<struct super_block>
+        """
+        for sb in list_for_each_entry(cls.super_blocks, cls.super_block_type,
+                                      's_list'):
+            yield sb
+
+    @export
+    @classmethod
+    def get_super_block(cls, desc):
+        return get_typed_pointer(desc, cls.super_block_type)
 
 inst = FileSystem()
