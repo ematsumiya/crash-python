@@ -7,11 +7,12 @@ from __future__ import division
 
 import gdb
 
-from crash.infra import CrashBaseClass
+from crash.infra import CrashBaseClass, export
 
 class BtrfsFileSystem(CrashBaseClass):
     __types__ = [ 'struct btrfs_inode', 'struct btrfs_fs_info *' ]
 
+    @export
     @classmethod
     def btrfs_inode(cls, vfs_inode):
         """
@@ -28,8 +29,9 @@ class BtrfsFileSystem(CrashBaseClass):
         """
         return container_of(vfs_inode, cls.btrfs_inode_type, 'vfs_inode')
 
+    @export
     @classmethod
-    def btrfs_sb_info(cls, super_block):
+    def btrfs_fs_info(cls, super_block):
         """
         Converts a VFS superblock to a btrfs fs_info
 
@@ -40,7 +42,8 @@ class BtrfsFileSystem(CrashBaseClass):
                 to convert to a struct btrfs_fs_info.
 
         Returns:
-            gdb.Value<struct btrfs_fs_info>: The converted struct
+            gdb.Value<struct btrfs_fs_info *>: The converted struct
                 btrfs_fs_info
         """
         return super_block['s_fs_info'].cast(cls.btrfs_fs_info_p_type)
+
