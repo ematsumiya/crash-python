@@ -16,6 +16,28 @@ from crash.infra import CrashBaseClass, export
 from crash.types.classdev import for_each_class_device
 import crash.exceptions
 
+REQ_TYPE_FS             = 1
+REQ_TYPE_BLOCK_PC       = 2
+REQ_TYPE_SENSE          = 3
+REQ_TYPE_PM_SUSPEND     = 4
+REQ_TYPE_PM_RESUME      = 5
+REQ_TYPE_PM_SHUTDOWN    = 6
+REQ_TYPE_SPECIAL        = 7
+REQ_TYPE_ATA_TASKFILE   = 8
+REQ_TYPE_ATA_PC         = 9
+
+REQ_TYPES = {
+    REQ_TYPE_FS           : "REQ_TYPE_FS",
+    REQ_TYPE_BLOCK_PC     : "REQ_TYPE_BLOCK_PC",
+    REQ_TYPE_SENSE        : "REQ_TYPE_SENSE",
+    REQ_TYPE_PM_SUSPEND   : "REQ_TYPE_PM_SUSPEND",
+    REQ_TYPE_PM_RESUME    : "REQ_TYPE_PM_RESUME",
+    REQ_TYPE_PM_SHUTDOWN  : "REQ_TYPE_PM_SHUTDOWN",
+    REQ_TYPE_SPECIAL      : "REQ_TYPE_SPECIAL",
+    REQ_TYPE_ATA_TASKFILE : "REQ_TYPE_ATA_TASKFILE",
+    REQ_TYPE_ATA_PC       : "REQ_TYPE_ATA_PC",
+}
+
 class Storage(CrashBaseClass):
     __types__ = [ 'struct gendisk',
                   'struct hd_struct',
