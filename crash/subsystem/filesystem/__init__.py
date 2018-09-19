@@ -18,9 +18,10 @@ class FileSystem(CrashBaseClass):
                   'struct super_block' ]
     __symvals__ = [ 'super_blocks' ]
     __symbol_callbacks__ = [
-                    ('dio_bio_end', '_register_dio_bio_end'),
+                    ('dio_bio_end_io', '_register_dio_bio_end'),
                     ('dio_bio_end_aio', '_register_dio_bio_end'),
-                    ('mpage_end_io', '_register_mpage_end_io') ]
+                    ('mpage_end_io', '_register_mpage_end_io'),
+                    ('end_bio_bh_io_sync', '_register_end_bio_bh_io_sync') ]
 
     buffer_head_decoders = {}
 
@@ -35,6 +36,10 @@ class FileSystem(CrashBaseClass):
     @classmethod
     def _register_mpage_end_io(cls, sym):
         block.register_bio_decoder(sym, cls.decode_mpage)
+
+    @classmethod
+    def _register_end_bio_bh_io_sync(cls, sym):
+        block.register_bio_decoder(sym, cls.decode_bio_buffer_head)
 
     @export
     @staticmethod
@@ -111,8 +116,9 @@ class FileSystem(CrashBaseClass):
         offset = dio['block_in_file'] << dio['blkbits']
 
         chain = {
-            'description' : "{:x} bio: Direct I/O for {} inode {} on {}".format(
-                            long(bio), fstype, dio['inode']['i_ino'], dev),
+            'description' : "{:x} bio: Direct I/O for {} inode {}, sector {} on {}".format(
+                            long(bio), fstype, dio['inode']['i_ino'],
+                            bio['bi_sector'], dev),
             'bio' : bio,
             'dio' : dio,
             'fstype' : fstype,
