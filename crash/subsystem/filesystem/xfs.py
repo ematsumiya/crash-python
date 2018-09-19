@@ -8,7 +8,7 @@ from __future__ import division
 from crash.infra import CrashBaseClass, export
 from crash.types.list import list_for_each_entry
 from crash.util import container_of
-from crash.subsystem.storage import register_bio_decoder
+from crash.subsystem.storage import register_bio_decoder, block_device_name
 import gdb
 
 # This script dumps the inodes and buffers in the XFS AIL.  The mount
@@ -103,7 +103,8 @@ class XFSFileSystem(CrashBaseClass):
                   'struct xfs_dq_logitem',
                   'struct xfs_qoff_logitem',
                   'struct xfs_inode',
-                  'struct xfs_mount *' ]
+                  'struct xfs_mount *',
+                  'struct xfs_buf *' ]
     __type_callbacks__ = [
         ('struct xfs_ail', '_detect_ail_version') ]
     __symbol_callbacks__ = [
